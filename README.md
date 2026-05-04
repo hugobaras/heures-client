@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Compteur d’heures client
 
-## Getting Started
+Application Next.js (style proche du portfolio) pour suivre les heures par client, appliquer des coefficients par catégorie (ex. « Travail ensemble » à 50 %), persister avec **Prisma** (SQLite en local via `file:./dev.db`, PostgreSQL en production), et générer des **devis en PDF**.
 
-First, run the development server:
+## Prérequis
+
+- Node 20+
+- Rien d’autre en local si vous utilisez SQLite (`DATABASE_URL="file:./dev.db"` dans `.env`). Pour la prod, une base **PostgreSQL** et une `DATABASE_URL` adaptée.
+
+## Installation
+
+```bash
+cd heures-client
+npm install
+cp .env.example .env
+```
+
+Renseignez `.env` :
+
+1. **`DATABASE_URL`** — par défaut SQLite : `file:./dev.db` (fichier sous `prisma/`). En production, utiliser une URL PostgreSQL (`postgresql://…`).
+2. **`AUTH_SECRET`** — secret pour les sessions (ex. `openssl rand -base64 32`).
+3. **`SEED_ADMIN_EMAIL`** / **`SEED_ADMIN_PASSWORD`** — utilisés par `npm run db:seed` pour créer un compte administrateur initial (mot de passe hashé en base). En option : **`SEED_RESET_ADMIN_PASSWORD=1`** pour forcer la mise à jour du mot de passe admin au prochain seed.
+4. **`INVOICE_*`** (optionnel) — informations affichées sur le PDF.
+
+## Authentification
+
+Les comptes sont stockés en base (modèle **`User`** : e-mail unique, mot de passe en **bcrypt**).
+
+- Connexion : `/login`
+- Inscription : `/register` (mot de passe ≥ 8 caractères)
+
+Après le premier seed, connectez-vous avec `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` (valeurs par défaut dans `.env.example` : `admin@local.dev` / `changeme123` — à changer en production).
+
+## Base de données
+
+```bash
+npx prisma migrate deploy
+npm run db:seed
+```
+
+Le seed crée les catégories **Développement / standard** (coefficient 1) et **Travail ensemble** (0,5), plus le compte admin décrit ci-dessus.
+
+En développement, vous pouvez utiliser `npx prisma migrate dev` à la place de `deploy`.
+
+## Développement
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvrir [http://localhost:3000](http://localhost:3000) et se connecter.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Déploiement (ex. Vercel + Neon)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Créer un projet Neon (ou autre Postgres), copier `DATABASE_URL` dans les variables d’environnement Vercel.
+2. Ajouter **`AUTH_SECRET`**, **`SEED_ADMIN_*`** (ou créer des utilisateurs autrement après migration), et les variables `INVOICE_*` si besoin.
+3. Commande de build : `prisma migrate deploy && next build` (configurer dans Vercel comme « Build Command »), ou exécuter les migrations une fois manuellement puis `next build`. Exécuter le seed une fois si vous en avez besoin.
+4. S’assurer que `AUTH_URL` correspond à l’URL de production si les redirections de connexion posent problème.
 
-## Learn More
+## Fonctionnalités
 
-To learn more about Next.js, take a look at the following resources:
+- **Clients** avec tarif horaire HT par défaut.
+- **Saisies** : date, durée en heures, client, catégorie ; `appliedFactor` est figé à l’enregistrement.
+- **Devis** : période + client → lignes agrégées par catégorie, TVA optionnelle, PDF via `/api/quotes/[id]/pdf` (authentifié).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Projet séparé du portfolio, même esprit visuel (tokens CSS `data-theme`, polices Inter / Fraunces / JetBrains Mono, grille en fond).
