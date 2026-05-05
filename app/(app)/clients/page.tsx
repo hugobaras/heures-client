@@ -1,3 +1,7 @@
+import { redirect } from "next/navigation";
+
+import { auth } from "@/auth";
+import { isOwnerSession } from "@/lib/access";
 import { prisma } from "@/lib/prisma";
 
 import {
@@ -13,6 +17,11 @@ function formatRate(d: { toString: () => string }) {
 export default async function ClientsPage(props: {
   searchParams: Promise<{ error?: string }>;
 }) {
+  const session = await auth();
+  if (!isOwnerSession(session)) {
+    redirect("/quotes");
+  }
+
   const { error } = await props.searchParams;
   const clients = await prisma.client.findMany({
     orderBy: { name: "asc" },

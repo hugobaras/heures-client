@@ -19,17 +19,19 @@ Renseignez `.env` :
 
 1. **`DATABASE_URL`** — par défaut SQLite : `file:./dev.db` (fichier sous `prisma/`). En production, utiliser une URL PostgreSQL (`postgresql://…`).
 2. **`AUTH_SECRET`** — secret pour les sessions (ex. `openssl rand -base64 32`).
-3. **`SEED_ADMIN_EMAIL`** / **`SEED_ADMIN_PASSWORD`** — utilisés par `npm run db:seed` pour créer un compte administrateur initial (mot de passe hashé en base). En option : **`SEED_RESET_ADMIN_PASSWORD=1`** pour forcer la mise à jour du mot de passe admin au prochain seed.
-4. **`INVOICE_*`** (optionnel) — informations affichées sur le PDF.
+3. **`APP_OWNER_EMAIL`** — e-mail du compte « propriétaire » : seul ce profil accède au tableau de bord, aux clients, aux saisies et à la création de devis. Les autres utilisateurs ne voient que **Mes devis** (devis dont la fiche client a le même e-mail que leur compte, en minuscules). Laissez vide en dev pour donner l’accès complet à tous les comptes.
+4. **`SEED_ADMIN_EMAIL`** / **`SEED_ADMIN_PASSWORD`** — utilisés par `npm run db:seed` pour créer un compte administrateur initial (mot de passe hashé en base). En option : **`SEED_RESET_ADMIN_PASSWORD=1`** pour forcer la mise à jour du mot de passe admin au prochain seed.
+5. **`INVOICE_*`** (optionnel) — informations affichées sur le PDF.
 
-## Authentification
+## Authentification et rôles
 
-Les comptes sont stockés en base (modèle **`User`** : e-mail unique, mot de passe en **bcrypt**).
+Les comptes sont en base (**`User`**, e-mail unique, mot de passe **bcrypt**).
 
-- Connexion : `/login`
-- Inscription : `/register` (mot de passe ≥ 8 caractères)
+- Connexion : `/login`, inscription : `/register` (mot de passe ≥ 8 caractères).
+- Avec **`APP_OWNER_EMAIL`** renseigné : seul ce compte gère clients, saisies et création de devis ; les autres ne voient que leurs devis (e-mail utilisateur = e-mail du **client** sur le devis) et peuvent télécharger le PDF.
+- **`APP_OWNER_EMAIL` vide** : tout utilisateur connecté a l’accès complet (utile en développement).
 
-Après le premier seed, connectez-vous avec `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` (valeurs par défaut dans `.env.example` : `admin@local.dev` / `changeme123` — à changer en production).
+Après le premier seed, connectez-vous avec `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` (voir `.env.example`) et alignez **`APP_OWNER_EMAIL`** sur votre e-mail propriétaire si vous activez le mode restreint.
 
 ## Base de données
 
@@ -53,7 +55,7 @@ Ouvrir [http://localhost:3000](http://localhost:3000) et se connecter.
 ## Déploiement (ex. Vercel + Neon)
 
 1. Créer un projet Neon (ou autre Postgres), copier `DATABASE_URL` dans les variables d’environnement Vercel.
-2. Ajouter **`AUTH_SECRET`**, **`SEED_ADMIN_*`** (ou créer des utilisateurs autrement après migration), et les variables `INVOICE_*` si besoin.
+2. Ajouter **`AUTH_SECRET`**, **`APP_OWNER_EMAIL`** (recommandé en production), **`SEED_ADMIN_*`** si vous utilisez le seed, et les variables `INVOICE_*` si besoin.
 3. Commande de build : `prisma migrate deploy && next build` (configurer dans Vercel comme « Build Command »), ou exécuter les migrations une fois manuellement puis `next build`. Exécuter le seed une fois si vous en avez besoin.
 4. S’assurer que `AUTH_URL` correspond à l’URL de production si les redirections de connexion posent problème.
 

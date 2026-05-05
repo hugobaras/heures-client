@@ -1,9 +1,12 @@
+import { auth } from "@/auth";
+import { isOwnerSession } from "@/lib/access";
 import { prisma } from "@/lib/prisma";
 import {
   billableHoursFromEntries,
   rawHoursFromEntries,
   roundHours,
 } from "@/lib/billing";
+import { redirect } from "next/navigation";
 
 async function getStats() {
   const entries = await prisma.timeEntry.findMany({
@@ -45,6 +48,11 @@ async function getStats() {
 }
 
 export default async function DashboardPage() {
+  const session = await auth();
+  if (!isOwnerSession(session)) {
+    redirect("/quotes");
+  }
+
   const { byClient, totals } = await getStats();
 
   return (

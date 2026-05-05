@@ -45,251 +45,278 @@ function fmtHours(h: number) {
   return `${h.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} h`;
 }
 
-/* Palette pro, proche du thème clair de l’app */
+/** Bento minimal — fond blanc, neutres froids, seul accent #c47a14 */
 const colors = {
-  ink: "#141210",
-  inkSoft: "#3d3830",
-  muted: "#6b655a",
-  faint: "#9a9488",
-  paper: "#fefdfb",
-  wash: "#f4f0e8",
-  headerTable: "#ebe4d6",
-  rowAlt: "#faf7f1",
-  border: "#d9d2c4",
-  accent: "#9a5f18",
-  accentBar: "#c47a14",
-  white: "#ffffff",
+  page: "#ffffff",
+  surface: "#ffffff",
+  ink: "#171717",
+  muted: "#525252",
+  faint: "#737373",
+  dim: "#a3a3a3",
+  line: "#e5e5e5",
+  rowAlt: "#fafafa",
+  accent: "#c47a14",
 };
 
 const styles = StyleSheet.create({
   page: {
-    backgroundColor: colors.paper,
+    backgroundColor: colors.page,
     fontFamily: "Helvetica",
-    fontSize: 9.5,
+    fontSize: 8.5,
     color: colors.ink,
   },
-  bleedBar: {
-    height: 7,
-    width: "100%",
-    backgroundColor: colors.accentBar,
-  },
-  content: {
+  shell: {
     paddingTop: 36,
-    paddingBottom: 48,
-    paddingHorizontal: 52,
+    paddingBottom: 36,
+    paddingHorizontal: 40,
   },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 28,
-  },
-  headerLeft: {
+  bentoRow: {
     flexDirection: "row",
     alignItems: "stretch",
+    marginBottom: 8,
+  },
+  cell: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+    borderRadius: 14,
+  },
+  cellGrow: {
     flex: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginRight: 8,
   },
-  accentRule: {
-    width: 5,
-    backgroundColor: colors.accentBar,
-    marginRight: 18,
+  cellMeta: {
+    width: 102,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    marginRight: 8,
+    justifyContent: "flex-start",
   },
-  titleBlock: {
+  cellMetaLast: {
+    marginRight: 0,
+  },
+  cellHalf: {
     flex: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    marginRight: 8,
   },
-  docType: {
-    fontFamily: "Times-Bold",
-    fontSize: 26,
-    letterSpacing: 2.5,
-    color: colors.ink,
+  cellHalfLast: {
+    marginRight: 0,
+  },
+  cellFull: {
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    overflow: "hidden",
+    marginBottom: 8,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 6,
   },
-  docSubtitle: {
-    fontSize: 11,
-    color: colors.inkSoft,
-    lineHeight: 1.45,
-    maxWidth: 320,
+  title: {
+    fontFamily: "Helvetica-Bold",
+    fontSize: 18,
+    color: colors.ink,
+    letterSpacing: -0.35,
   },
-  metaCard: {
-    width: 168,
+  badge: {
+    marginLeft: 8,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.white,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderColor: colors.accent,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+  },
+  badgeText: {
+    fontFamily: "Helvetica-Bold",
+    fontSize: 5.5,
+    color: colors.accent,
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
+  },
+  subject: {
+    fontSize: 8.5,
+    color: colors.muted,
+    lineHeight: 1.42,
+    marginTop: 2,
+  },
+  period: {
+    marginTop: 6,
+    fontSize: 7.5,
+    color: colors.faint,
+    lineHeight: 1.38,
   },
   metaLabel: {
-    fontSize: 7,
-    letterSpacing: 0.8,
-    color: colors.muted,
+    fontSize: 6,
+    letterSpacing: 1.1,
+    color: colors.dim,
     textTransform: "uppercase",
-    marginBottom: 3,
+    marginBottom: 5,
+    fontFamily: "Helvetica-Bold",
   },
   metaValue: {
     fontFamily: "Helvetica-Bold",
-    fontSize: 10,
+    fontSize: 8.5,
     color: colors.ink,
   },
-  metaValueSmall: {
-    fontSize: 8.5,
-    color: colors.inkSoft,
-    marginTop: 2,
+  metaValueDate: {
+    fontSize: 8,
+    color: colors.muted,
     lineHeight: 1.35,
   },
-  partiesRow: {
-    flexDirection: "row",
-    marginBottom: 26,
-  },
-  partyBox: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.wash,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    minHeight: 108,
-  },
   partyLabel: {
-    fontSize: 7.5,
-    letterSpacing: 1,
-    color: colors.muted,
+    fontSize: 6,
+    letterSpacing: 1.1,
+    color: colors.dim,
     textTransform: "uppercase",
-    marginBottom: 10,
+    marginBottom: 7,
     fontFamily: "Helvetica-Bold",
   },
   partyName: {
     fontFamily: "Helvetica-Bold",
-    fontSize: 11,
+    fontSize: 9,
     color: colors.ink,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   partyLine: {
-    fontSize: 9,
-    color: colors.inkSoft,
-    lineHeight: 1.45,
+    fontSize: 7.5,
+    color: colors.muted,
+    lineHeight: 1.4,
   },
-  sectionTitleRow: {
+  tableSectionBar: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
   },
-  sectionTitle: {
+  tableSectionAccent: {
+    width: 3,
+    height: 14,
+    backgroundColor: colors.accent,
+    borderRadius: 2,
+    marginRight: 8,
+  },
+  tableSectionTitle: {
     fontFamily: "Helvetica-Bold",
-    fontSize: 10,
-    letterSpacing: 0.4,
+    fontSize: 8,
     color: colors.ink,
-  },
-  sectionRule: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.border,
-    marginLeft: 12,
-  },
-  table: {
-    borderWidth: 1,
-    borderColor: colors.border,
+    letterSpacing: 0.2,
   },
   thRow: {
     flexDirection: "row",
-    backgroundColor: colors.headerTable,
+    backgroundColor: colors.rowAlt,
+    paddingVertical: 7,
+    paddingHorizontal: 14,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+    borderBottomColor: colors.line,
   },
   thText: {
     fontFamily: "Helvetica-Bold",
-    fontSize: 8,
-    letterSpacing: 0.6,
-    color: colors.ink,
+    fontSize: 6,
+    letterSpacing: 0.9,
+    color: colors.muted,
     textTransform: "uppercase",
   },
   trRow: {
     flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 11,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: colors.line,
+    backgroundColor: colors.surface,
   },
   trAlt: {
     backgroundColor: colors.rowAlt,
+  },
+  trLast: {
+    borderBottomWidth: 0,
   },
   tdDesc: { width: "40%", paddingRight: 8 },
   tdHours: { width: "18%", textAlign: "right" },
   tdPu: { width: "21%", textAlign: "right" },
   tdTot: { width: "21%", textAlign: "right" },
   tdMain: {
-    fontSize: 9.5,
+    fontSize: 8.5,
     color: colors.ink,
   },
   tdMuted: {
-    fontSize: 9,
-    color: colors.muted,
+    fontSize: 8,
+    color: colors.faint,
   },
   totalsWrap: {
-    marginTop: 22,
+    marginTop: 4,
     alignItems: "flex-end",
   },
-  totalsCard: {
-    width: 232,
-    borderWidth: 1.5,
-    borderColor: colors.ink,
-    backgroundColor: colors.white,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+  totalsCell: {
+    width: 196,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.line,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.accent,
   },
   totalLine: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 5,
+    alignItems: "center",
   },
   totalLineLast: {
     marginBottom: 0,
-    marginTop: 6,
-    paddingTop: 10,
+    marginTop: 5,
+    paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: colors.line,
   },
   totalLabel: {
-    fontSize: 9.5,
-    color: colors.inkSoft,
+    fontSize: 8,
+    color: colors.muted,
   },
   totalValue: {
     fontFamily: "Helvetica-Bold",
-    fontSize: 9.5,
+    fontSize: 8,
     color: colors.ink,
   },
   grandLabel: {
     fontFamily: "Helvetica-Bold",
-    fontSize: 11,
+    fontSize: 8.5,
     color: colors.ink,
   },
   grandValue: {
     fontFamily: "Helvetica-Bold",
-    fontSize: 13,
-    color: colors.accentBar,
+    fontSize: 11,
+    color: colors.accent,
   },
   footer: {
-    marginTop: 36,
-    paddingTop: 16,
+    marginTop: 20,
+    paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: colors.line,
   },
   footerBrand: {
-    fontSize: 8,
+    fontSize: 7,
     color: colors.muted,
-    marginBottom: 6,
+    marginBottom: 4,
     fontFamily: "Helvetica-Bold",
   },
   footerLegal: {
-    fontSize: 7.5,
-    color: colors.faint,
+    fontSize: 6.5,
+    color: colors.dim,
     lineHeight: 1.5,
   },
   footerHint: {
-    marginTop: 10,
-    fontSize: 8,
-    color: colors.muted,
+    marginTop: 8,
+    fontSize: 7,
+    color: colors.dim,
     fontFamily: "Helvetica-Oblique",
   },
 });
@@ -305,38 +332,30 @@ export function DevisPdfDocument(props: DevisPdfProps) {
       subject={subject}
     >
       <Page size="A4" style={styles.page}>
-        <View style={styles.bleedBar} fixed />
-        <View style={styles.content}>
-          <View style={styles.headerRow}>
-            <View style={styles.headerLeft}>
-              <View style={styles.accentRule} />
-              <View style={styles.titleBlock}>
-                <Text style={styles.docType}>DEVIS</Text>
-                <Text style={styles.docSubtitle}>{subject}</Text>
-                <Text
-                  style={{
-                    fontSize: 11,
-                    color: colors.muted,
-                    marginTop: 4,
-                    lineHeight: 1.45,
-                  }}
-                >
-                  {props.periodLabel}
-                </Text>
+        <View style={styles.shell}>
+          <View style={styles.bentoRow}>
+            <View style={[styles.cell, styles.cellGrow]}>
+              <View style={styles.titleRow}>
+                <Text style={styles.title}>Devis</Text>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>Indicatif</Text>
+                </View>
               </View>
+              <Text style={styles.subject}>{subject}</Text>
+              <Text style={styles.period}>{props.periodLabel}</Text>
             </View>
-            <View style={styles.metaCard}>
-              <Text style={styles.metaLabel}>Référence</Text>
+            <View style={[styles.cell, styles.cellMeta]}>
+              <Text style={styles.metaLabel}>Réf.</Text>
               <Text style={styles.metaValue}>{documentRef}</Text>
-              <Text style={{ ...styles.metaLabel, marginTop: 10 }}>
-                Date d’émission
-              </Text>
-              <Text style={styles.metaValueSmall}>{props.createdLabel}</Text>
+            </View>
+            <View style={[styles.cell, styles.cellMeta, styles.cellMetaLast]}>
+              <Text style={styles.metaLabel}>Émis</Text>
+              <Text style={styles.metaValueDate}>{props.createdLabel}</Text>
             </View>
           </View>
 
-          <View style={styles.partiesRow}>
-            <View style={[styles.partyBox, { marginRight: 14 }]}>
+          <View style={styles.bentoRow}>
+            <View style={[styles.cell, styles.cellHalf]}>
               <Text style={styles.partyLabel}>Émetteur</Text>
               <Text style={styles.partyName}>{issuer.name}</Text>
               {issuer.address ? (
@@ -351,27 +370,26 @@ export function DevisPdfDocument(props: DevisPdfProps) {
                 </Text>
               ) : null}
             </View>
-            <View style={styles.partyBox}>
-              <Text style={styles.partyLabel}>Facturation à</Text>
+            <View style={[styles.cell, styles.cellHalf, styles.cellHalfLast]}>
+              <Text style={styles.partyLabel}>Facturation</Text>
               <Text style={styles.partyName}>{props.clientName}</Text>
               {props.clientEmail ? (
                 <Text style={styles.partyLine}>{props.clientEmail}</Text>
               ) : (
-                <Text style={{ ...styles.partyLine, color: colors.faint }}>
+                <Text style={{ ...styles.partyLine, color: colors.dim }}>
                   —
                 </Text>
               )}
             </View>
           </View>
 
-          <View style={styles.sectionTitleRow}>
-            <Text style={styles.sectionTitle}>Détail des prestations</Text>
-            <View style={styles.sectionRule} />
-          </View>
-
-          <View style={styles.table}>
+          <View style={[styles.cell, styles.cellFull]}>
+            <View style={styles.tableSectionBar}>
+              <View style={styles.tableSectionAccent} />
+              <Text style={styles.tableSectionTitle}>Prestations</Text>
+            </View>
             <View style={styles.thRow}>
-              <Text style={[styles.thText, styles.tdDesc]}>Prestation</Text>
+              <Text style={[styles.thText, styles.tdDesc]}>Libellé</Text>
               <Text style={[styles.thText, styles.tdHours]}>Qté (h)</Text>
               <Text style={[styles.thText, styles.tdPu]}>PU HT</Text>
               <Text style={[styles.thText, styles.tdTot]}>Montant HT</Text>
@@ -379,7 +397,11 @@ export function DevisPdfDocument(props: DevisPdfProps) {
             {lines.map((l, i) => (
               <View
                 key={`${l.label}-${i}`}
-                style={[styles.trRow, i % 2 === 1 ? styles.trAlt : {}]}
+                style={[
+                  styles.trRow,
+                  i % 2 === 1 ? styles.trAlt : {},
+                  i === lines.length - 1 ? styles.trLast : {},
+                ]}
                 wrap={false}
               >
                 <Text style={[styles.tdMain, styles.tdDesc]}>{l.label}</Text>
@@ -397,7 +419,7 @@ export function DevisPdfDocument(props: DevisPdfProps) {
           </View>
 
           <View style={styles.totalsWrap}>
-            <View style={styles.totalsCard}>
+            <View style={styles.totalsCell}>
               <View style={styles.totalLine}>
                 <Text style={styles.totalLabel}>Total HT</Text>
                 <Text style={styles.totalValue}>

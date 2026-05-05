@@ -5,7 +5,8 @@ import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
-import { requireSession } from "@/lib/require-session";
+import { normalizeEmail } from "@/lib/access";
+import { requireOwner } from "@/lib/require-session";
 
 function parseRate(input: string): Prisma.Decimal | null {
   const n = Number.parseFloat(input.replace(",", "."));
@@ -18,10 +19,10 @@ function bailClients(message: string): never {
 }
 
 export async function createClientAction(formData: FormData) {
-  await requireSession();
+  await requireOwner();
   const name = String(formData.get("name") ?? "").trim();
   const emailRaw = String(formData.get("email") ?? "").trim();
-  const email = emailRaw.length ? emailRaw : null;
+  const email = emailRaw.length ? normalizeEmail(emailRaw) : null;
   const rate = parseRate(String(formData.get("defaultRate") ?? ""));
   if (!name || !rate) {
     bailClients("Nom et tarif horaire valides requis.");
@@ -35,11 +36,11 @@ export async function createClientAction(formData: FormData) {
 }
 
 export async function updateClientAction(formData: FormData) {
-  await requireSession();
+  await requireOwner();
   const id = String(formData.get("id") ?? "");
   const name = String(formData.get("name") ?? "").trim();
   const emailRaw = String(formData.get("email") ?? "").trim();
-  const email = emailRaw.length ? emailRaw : null;
+  const email = emailRaw.length ? normalizeEmail(emailRaw) : null;
   const rate = parseRate(String(formData.get("defaultRate") ?? ""));
   if (!id || !name || !rate) {
     bailClients("Champs invalides.");
@@ -54,7 +55,7 @@ export async function updateClientAction(formData: FormData) {
 }
 
 export async function deleteClientAction(id: string) {
-  await requireSession();
+  await requireOwner();
   await prisma.client.delete({ where: { id } });
   revalidatePath("/clients");
   revalidatePath("/");

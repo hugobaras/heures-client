@@ -10,7 +10,7 @@ import {
   roundMoney,
 } from "@/lib/billing";
 import { prisma } from "@/lib/prisma";
-import { requireSession } from "@/lib/require-session";
+import { requireOwner } from "@/lib/require-session";
 
 function parseDateOnly(input: string): Date | null {
   const s = input.trim();
@@ -67,7 +67,7 @@ function bailToNew(message: string): never {
 }
 
 export async function createQuoteAction(formData: FormData) {
-  await requireSession();
+  await requireOwner();
   const clientId = String(formData.get("clientId") ?? "");
   const periodStart = parseDateOnly(String(formData.get("periodStart") ?? ""));
   const periodEnd = parseDateOnly(String(formData.get("periodEnd") ?? ""));

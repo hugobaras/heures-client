@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
+import { getOwnerEmailEnv, normalizeEmail } from "@/lib/access";
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
@@ -14,6 +15,22 @@ export default auth((req) => {
   if (isLoggedIn && isAuthPage) {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
+
+  const ownerEmail = getOwnerEmailEnv();
+  const userEmail = normalizeEmail(req.auth?.user?.email ?? undefined);
+  const isOwner = !ownerEmail || Boolean(userEmail && userEmail === ownerEmail);
+
+  if (isLoggedIn && !isOwner) {
+    const clientForbidden =
+      path === "/" ||
+      path.startsWith("/clients") ||
+      path.startsWith("/entries") ||
+      path === "/quotes/new";
+    if (clientForbidden) {
+      return NextResponse.redirect(new URL("/quotes", req.nextUrl.origin));
+    }
+  }
+
   return NextResponse.next();
 });
 

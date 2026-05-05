@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
+import { auth } from "@/auth";
+import { isOwnerSession } from "@/lib/access";
 import {
   billableHoursFromEntries,
   rawHoursFromEntries,
@@ -25,6 +28,11 @@ function parseYmd(s: string | undefined): Date | null {
 export default async function EntriesPage(props: {
   searchParams: Promise<Search & { error?: string }>;
 }) {
+  const session = await auth();
+  if (!isOwnerSession(session)) {
+    redirect("/quotes");
+  }
+
   const sp = await props.searchParams;
   const { error, ...filterSp } = sp;
   const clientFilter = filterSp.client?.trim() || "";

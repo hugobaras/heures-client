@@ -1,6 +1,7 @@
 import { renderToBuffer } from "@react-pdf/renderer";
 
 import { auth } from "@/auth";
+import { canAccessQuoteForClient } from "@/lib/access";
 import { roundMoney } from "@/lib/billing";
 import { DevisPdfDocument } from "@/lib/pdf/devis-document";
 import { prisma } from "@/lib/prisma";
@@ -33,6 +34,9 @@ export async function GET(
   });
   if (!quote) {
     return new Response("Devis introuvable", { status: 404 });
+  }
+  if (!canAccessQuoteForClient(session, quote.client.email)) {
+    return new Response("Non autorisé", { status: 403 });
   }
 
   const subtotal = quote.lines.reduce((s, l) => s + l.lineTotal.toNumber(), 0);

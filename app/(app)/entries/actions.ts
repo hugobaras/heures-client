@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
-import { requireSession } from "@/lib/require-session";
+import { requireOwner } from "@/lib/require-session";
 
 function parseDateOnly(input: string): Date | null {
   const s = input.trim();
@@ -18,7 +18,7 @@ function bailEntries(message: string): never {
 }
 
 export async function createTimeEntryAction(formData: FormData) {
-  await requireSession();
+  await requireOwner();
   const clientId = String(formData.get("clientId") ?? "");
   const categoryId = String(formData.get("categoryId") ?? "");
   const date = parseDateOnly(String(formData.get("date") ?? ""));
@@ -59,7 +59,7 @@ export async function createTimeEntryAction(formData: FormData) {
 }
 
 export async function deleteTimeEntryAction(id: string) {
-  await requireSession();
+  await requireOwner();
   await prisma.timeEntry.delete({ where: { id } });
   revalidatePath("/entries");
   revalidatePath("/");

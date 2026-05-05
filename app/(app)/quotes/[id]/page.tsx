@@ -1,18 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { canAccessQuoteForClient } from "@/lib/access";
 import { roundMoney } from "@/lib/billing";
+import { prisma } from "@/lib/prisma";
 
 type Props = { params: Promise<{ id: string }> };
 
 export default async function QuoteDetailPage(props: Props) {
   const { id } = await props.params;
+  const session = await auth();
   const quote = await prisma.quote.findUnique({
     where: { id },
     include: { client: true, lines: { orderBy: { sortOrder: "asc" } } },
   });
   if (!quote) notFound();
+  if (!canAccessQuoteForClient(session, quote.client.email)) notFound();
 
   const subtotal = quote.lines.reduce((s, l) => s + l.lineTotal.toNumber(), 0);
   const vatRate = quote.vatRate?.toNumber() ?? null;

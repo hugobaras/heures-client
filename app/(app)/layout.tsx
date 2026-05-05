@@ -1,5 +1,7 @@
 import Link from "next/link";
 
+import { auth } from "@/auth";
+import { isOwnerSession } from "@/lib/access";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { GridBackground } from "@/components/ui/grid-background";
@@ -7,18 +9,24 @@ import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const links = [
+const ownerLinks = [
   { href: "/", label: "Tableau de bord" },
   { href: "/clients", label: "Clients" },
   { href: "/entries", label: "Saisies" },
   { href: "/quotes", label: "Devis" },
 ] as const;
 
-export default function AppShellLayout({
+const clientLinks = [{ href: "/quotes", label: "Mes devis" }] as const;
+
+export default async function AppShellLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  const owner = isOwnerSession(session);
+  const links = owner ? ownerLinks : clientLinks;
+
   return (
     <div className="relative min-h-full">
       <GridBackground className="opacity-90" />

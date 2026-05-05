@@ -1,4 +1,8 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
+import { auth } from "@/auth";
+import { isOwnerSession } from "@/lib/access";
 
 import { prisma } from "@/lib/prisma";
 
@@ -7,6 +11,11 @@ import { createQuoteAction } from "../actions";
 type Props = { searchParams: Promise<{ error?: string }> };
 
 export default async function NewQuotePage(props: Props) {
+  const session = await auth();
+  if (!isOwnerSession(session)) {
+    redirect("/quotes");
+  }
+
   const { error } = await props.searchParams;
   const clients = await prisma.client.findMany({ orderBy: { name: "asc" } });
 
